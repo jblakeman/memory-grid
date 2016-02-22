@@ -5,14 +5,15 @@ h1 {
     margin-bottom: 50px;
 }
 
-table {
+table#grid {
     border-spacing: 5px;
     margin: 0 auto;
 }
 
-td {
+td.cell {
     height: 65px;
     width: 65px;
     border: 1px solid black;
 }
+
 
