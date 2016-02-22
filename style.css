@@ -1,0 +1,18 @@
+h1 {
+    font-family: "Russo One", "sans-serif";
+    text-align: center;
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
+table {
+    border-spacing: 5px;
+    margin: 0 auto;
+}
+
+td {
+    height: 65px;
+    width: 65px;
+    border: 1px solid black;
+}
+
