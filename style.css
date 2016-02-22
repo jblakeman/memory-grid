@@ -11,7 +11,7 @@ table#grid {
     margin: 0 auto;
 }
 
-td.cell {
+td.grid-cell {
     height: 65px;
     width: 65px;
     border: 1px solid black;
