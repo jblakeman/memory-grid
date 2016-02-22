@@ -50,7 +50,7 @@ var memory = {
                 }
             }
         }
-        var key = 0, index = 0;
+        var key, index;
         for (key in randomCells) {
             for (index in randomCells[key]) {
                 this.gridArray[key][index] = randomCells[key][index];
