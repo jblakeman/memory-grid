@@ -4,7 +4,7 @@ var memory = {
     gridArray: [],
     numGuesses: 0,
     grid: document.getElementById("grid"),
-    gridRows: document.getElementsByClassName("grid-row"),
+    gridRows: document.getElementsByClassName("row"),
     assignNumGuesses: function() {
         this.numGuesses = Math.floor((this.gridHeight*this.gridWidth)/3)+1;
     },
@@ -20,9 +20,7 @@ var memory = {
             row = [];
             rowElement = this.createNewElement("tr", "row");
             for (j = 0; j < this.gridWidth; j++) {
-                rowElement.appendChild(
-                    this.createNewElement("td", "cell")
-                );
+                rowElement.appendChild(this.createNewElement("td", "cell"));
                 row.push(false);
             }
             this.grid.appendChild(rowElement);
