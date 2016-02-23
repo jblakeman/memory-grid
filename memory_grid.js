@@ -46,14 +46,9 @@ var memory = {
                 r2 = Math.floor(Math.random() * this.gridWidth);
                 if (!(r2 in randomCells[r1])) {
                     randomCells[r1][r2] = true;
+                    this.gridArray[r1][r2] = randomCells[r1][r2];
                     numAssigned++;
                 }
-            }
-        }
-        var key, index;
-        for (key in randomCells) {
-            for (index in randomCells[key]) {
-                this.gridArray[key][index] = randomCells[key][index];
             }
         }
     },
