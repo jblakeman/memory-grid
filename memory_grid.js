@@ -18,10 +18,10 @@ var memory = {
         this.assignNumGuesses();
         for (i = 0; i < this.gridHeight; i++) {
             row = [];
-            rowElement = this.createNewElement("tr", "grid-row");
+            rowElement = this.createNewElement("tr", "row");
             for (j = 0; j < this.gridWidth; j++) {
                 rowElement.appendChild(
-                    this.createNewElement("td", "grid-cell")
+                    this.createNewElement("td", "cell")
                 );
                 row.push(false);
             }
