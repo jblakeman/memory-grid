@@ -7,14 +7,14 @@ h1 {
 }
 
 table#grid {
-    border-spacing: 5px;
+    border-spacing: 2px;
     margin: 0 auto;
 }
 
 td.grid-cell {
     height: 65px;
     width: 65px;
-    border: 1px solid black;
+    border: 2px solid black;
 }
 
 
