@@ -29,12 +29,6 @@ var memory = {
             this.gridArray.push(row);
         }
     },
-    assignDefaults: function(obj, key, value) {
-        if (!(key in obj)) {
-            obj[key] = value;
-        }
-        return obj;
-    },
     populateRandomGrid: function() {
         var numAssigned = 0, randomCells = {}, r1, r2;
         while(numAssigned < this.numGuesses) {
@@ -46,17 +40,12 @@ var memory = {
                 r2 = Math.floor(Math.random() * this.gridWidth);
                 if (!(r2 in randomCells[r1])) {
                     randomCells[r1][r2] = true;
+                    this.gridArray[r1][r2] = randomCells[r1][r2];
                     numAssigned++;
                 }
             }
         }
-        var key, index;
-        for (key in randomCells) {
-            for (index in randomCells[key]) {
-                this.gridArray[key][index] = randomCells[key][index];
-            }
-        }
-    },
+    }
 };
 memory.createGrid();
 memory.populateRandomGrid();
