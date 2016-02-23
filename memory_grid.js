@@ -1,6 +1,6 @@
 var memory = {
     gridHeight: 6,
-    gridWidth: 4,
+    gridWidth: 5,
     gridArray: [],
     numGuesses: 0,
     grid: document.getElementById("grid"),
