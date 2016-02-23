@@ -14,13 +14,18 @@ var memory = {
         if (className) newElement.className = className;
         return newElement;
     },
+    changeBackgroundColor: function(event, color, prevent) {
+        event.target.style.backgroundColor = color;
+        if (prevent) event.prevenDefault();
+    },
     createGrid: function() {
-        var rowElement, row, i, j;
+        var rowElement, row, cell, i, j;
         this.assignNumGuesses();
         for (i = 0; i < this.gridHeight; i++) {
             rowElement = this.createNewElement("tr", "row");
             for (j = 0; j < this.gridWidth; j++) {
-                rowElement.appendChild(this.createNewElement("td", "cell"));
+                cell = this.createNewElement("td", "cell");
+                rowElement.appendChild(cell);
             }
             this.grid.appendChild(rowElement);
         }
@@ -45,15 +50,26 @@ var memory = {
         }
     },
     hideFilled: function() {
+        self = this;
         setTimeout(function() {
-            var cells, key1, key2;
-            for (key1 in this.rCells) {
-                cells = this.gridRows[key1].childNodes;
-                for (key2 in this.rCells[key1]) {
-                    cells[key2].style.backgroundColor = "white";
-                }
-            }
-        }.bind(this), this.hideAfterMs);
+            Object.getOwnPropertyNames(self.gridRows).forEach(function(key1) {
+                var cells = self.gridRows[key1].childNodes;
+                Object.getOwnPropertyNames(cells).forEach(
+                    function(key2) {
+                        var prevent = false, color = "red";
+                        if (key2 in self.rCells[key1]) {
+                            color = "green";
+                            prevent = true;
+                        }
+                        cells[key2].addEventListener("click", function(event) {
+                            self.numGuesses++;
+                            self.changeBackgroundColor(event, color, prevent);
+                        });
+                        cells[key2].style.backgroundColor = "white";
+                    });
+
+            });
+        }, self.hideAfterMs);
     }
 };
 memory.createGrid();
