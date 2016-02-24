@@ -11,10 +11,14 @@ var memory = {
             hidden: "#8B93C0",
         }
     },
-    numGuesses: 0,
+    guesses: {
+        max: 0,
+        used: 0,
+        correct: 0
+    },
     hideAfterMs: 3350,
     assignNumGuesses: function() {
-        this.numGuesses = Math.floor((this.grid.height*this.grid.width)/3)+1;
+        this.guesses.max = Math.floor((this.grid.height*this.grid.width)/3)+1;
     },
     createNewElement: function(tagName, className) {
         var newElement = document.createElement(tagName);
@@ -44,7 +48,7 @@ var memory = {
     populateRandomGrid: function() {
         var numAssigned = 0, r1, r2;
         this.grid.filled = {};
-        while(numAssigned < this.numGuesses) {
+        while(numAssigned < this.guesses.max) {
             r1 = Math.floor(Math.random() * this.grid.height);
             if (!(r1 in this.grid.filled)) {
                 this.grid.filled[r1] = {};
@@ -59,25 +63,50 @@ var memory = {
             }
         }
     },
-    hideFilled: function() {
+    checkForWinner: function(self) {
+        if (self.guesses.max === self.guesses.used) {
+            if (self.guesses.correct === self.guesses.max) {
+                alert("You remembered the grid perfectly!");
+            } else {
+                alert("You got " + self.guesses.correct + " out of " +
+                self.guesses.max + " guesses correct");
+            }
+            self.endGame();
+        }
+    },
+    setHiddenBoard: function() {
         self = this;
         setTimeout(function() {
             self.grid.elements.forEach(function(row, i1) {
                 row.forEach(function(cell, i2) {
-                    var color = self.grid.colors.miss;
+                    var correct = false, color = self.grid.colors.miss;
                     if (i1 in self.grid.filled && i2 in self.grid.filled[i1]) {
                         color = self.grid.colors.hit;
+                        correct = true;
                     }
                     cell.addEventListener("click", function(event) {
-                        self.numGuesses++;
+                        if (correct) {
+                            self.guesses.correct++;
+                        }
+                        self.guesses.used++;
                         self.changeBackgroundColor(event, color);
+                        self.checkForWinner(self);
                     });
                     cell.style.backgroundColor = self.grid.colors.hidden;
                 });
             });
         }, self.hideAfterMs);
+    },
+    endGame: function() {
+        // Cloning and replacing removes all cell event listeners
+        var oldGrid = document.getElementById("grid");
+        var newGrid = oldGrid.cloneNode(true);
+        oldGrid.parentNode.replaceChild(newGrid, oldGrid);
+    },
+    playGame: function() {
+        this.createGrid();
+        this.populateRandomGrid();
+        this.setHiddenBoard();
     }
 };
-memory.createGrid();
-memory.populateRandomGrid();
-memory.hideFilled();
+memory.playGame();
