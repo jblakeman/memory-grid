@@ -4,6 +4,11 @@ var memory = {
         width: 5,
         filled: {},
         elements: [],
+        colors: {
+            miss: "#FF353F",
+            hit: "#84FF77",
+            filled: "#CEE7FF",
+        }
     },
     numGuesses: 0,
     hideAfterMs: 3350,
@@ -47,21 +52,20 @@ var memory = {
                 r2 = Math.floor(Math.random() * this.grid.width);
                 if (!(r2 in this.grid.filled[r1])) {
                     this.grid.filled[r1][r2] = true;
-                    this.grid.elements[r1][r2].style.backgroundColor = "#CEE7FF";
+                    this.grid.elements[r1][r2].style.backgroundColor = this.grid.colors.filled;
                     numAssigned++;
                 }
             }
         }
-        console.log(self.grid.filled);
     },
     hideFilled: function() {
         self = this;
         setTimeout(function() {
             self.grid.elements.forEach(function(row, i1) {
                 row.forEach(function(cell, i2) {
-                    var color = "#FF353F";
+                    var color = self.grid.colors.miss;
                     if (i1 in self.grid.filled && i2 in self.grid.filled[i1]) {
-                        color = "#84FF77";
+                        color = self.grid.colors.hit;
                     }
                     cell.addEventListener("click", function(event) {
                         self.numGuesses++;
