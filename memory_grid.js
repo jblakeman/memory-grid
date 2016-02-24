@@ -8,6 +8,7 @@ var memory = {
             miss: "#FF353F",
             hit: "#84FF77",
             filled: "#CEE7FF",
+            hidden: "#8B93C0",
         }
     },
     numGuesses: 0,
@@ -71,7 +72,7 @@ var memory = {
                         self.numGuesses++;
                         self.changeBackgroundColor(event, color);
                     });
-                    cell.style.backgroundColor = "#8B93C0";
+                    cell.style.backgroundColor = self.grid.colors.hidden;
                 });
             });
         }, self.hideAfterMs);
