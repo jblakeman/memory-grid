@@ -2,6 +2,7 @@ var memory = {
     grid: {
         height: 6,
         width: 5,
+        fillNum: 0,
         filled: {},
         elements: [],
         colors: {
@@ -12,27 +13,22 @@ var memory = {
         }
     },
     guesses: {
-        max: 0,
         used: 0,
         correct: 0
     },
     hideAfterMs: 3350,
-    assignNumGuesses: function() {
-        this.guesses.max = Math.floor((this.grid.height*this.grid.width)/3)+1;
+    setNumFilled: function() {
+        this.grid.fillNum = Math.floor((this.grid.height*this.grid.width)/3)+1;
     },
     createNewElement: function(tagName, className) {
         var newElement = document.createElement(tagName);
         if (className) newElement.className = className;
         return newElement;
     },
-    changeBackgroundColor: function(event, color) {
-        event.target.style.backgroundColor = color;
-        event.preventDefault();
-    },
     createGrid: function() {
         var row, rowElement, cell, i, j;
         var table = document.getElementById("grid");
-        this.assignNumGuesses();
+        this.setNumFilled();
 		for (i = 0; i < this.grid.height; i++) {
             rowElement = this.createNewElement("tr", "row");
             row = [];
@@ -48,7 +44,7 @@ var memory = {
     populateRandomGrid: function() {
         var numAssigned = 0, r1, r2;
         this.grid.filled = {};
-        while(numAssigned < this.guesses.max) {
+        while(numAssigned < this.grid.fillNum) {
             r1 = Math.floor(Math.random() * this.grid.height);
             if (!(r1 in this.grid.filled)) {
                 this.grid.filled[r1] = {};
@@ -64,15 +60,19 @@ var memory = {
         }
     },
     checkForWinner: function(self) {
-        if (self.guesses.max === self.guesses.used) {
-            if (self.guesses.correct === self.guesses.max) {
+        if (self.grid.fillNum === self.guesses.used) {
+            if (self.guesses.correct === self.grid.fillNum) {
                 alert("You remembered the grid perfectly!");
             } else {
                 alert("You got " + self.guesses.correct + " out of " +
-                self.guesses.max + " guesses correct");
+                self.grid.fillNum + " guesses correct");
             }
             self.endGame();
         }
+    },
+    changeBackgroundColor: function(event, color) {
+        event.target.style.backgroundColor = color;
+        event.preventDefault();
     },
     setHiddenBoard: function() {
         self = this;
