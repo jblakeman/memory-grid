@@ -12,6 +12,8 @@ var memory = {
             hidden: "#8B93C0",
         }
     },
+    startButton: document.getElementById("start-new"),
+    statusBar: document.getElementById("remaining"),
     guesses: {
         used: 0,
         correct: 0
@@ -62,10 +64,13 @@ var memory = {
     checkForWinner: function(self) {
         if (self.grid.fillNum === self.guesses.used) {
             if (self.guesses.correct === self.grid.fillNum) {
-                alert("You remembered the grid perfectly!");
+                self.statusBar.innerText = "Perfect Game!  " +
+                                           self.guesses.correct + "/" +
+                                           self.guesses.max;
             } else {
-                alert("You got " + self.guesses.correct + " out of " +
-                self.grid.fillNum + " guesses correct");
+                self.statusBar.innerText = "Game Over.  " +
+                                           self.guesses.correct + "/" +
+                                           self.guesses.used + " correct";
             }
             self.endGame();
         }
@@ -89,13 +94,19 @@ var memory = {
                             self.guesses.correct++;
                         }
                         self.guesses.used++;
+                        self.statusBar.innerText = (self.grid.fillNum -
+                                                    self.guesses.used) +
+                                                   " Guesses left";
                         self.changeBackgroundColor(event, color);
                         self.checkForWinner(self);
                     });
                     cell.style.backgroundColor = self.grid.colors.hidden;
                 });
             });
+            self.statusBar.innerText = self.grid.fillNum + " Guesses left";
         }, self.hideAfterMs);
+    },
+    newGame: function() {
     },
     endGame: function() {
         // Cloning and replacing removes all grid event listeners
