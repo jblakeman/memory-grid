@@ -1,12 +1,14 @@
 var memory = {
-    gridHeight: 6,
-    gridWidth: 5,
+    grid: {
+        height: 6,
+        width: 5,
+        filled: {},
+        elements: [],
+    },
     numGuesses: 0,
-    rCells: {},
-    hideAfterMs: 3000,
-    grid: [],
+    hideAfterMs: 3350,
     assignNumGuesses: function() {
-        this.numGuesses = Math.floor((this.gridHeight*this.gridWidth)/3)+1;
+        this.numGuesses = Math.floor((this.grid.height*this.grid.width)/3)+1;
     },
     createNewElement: function(tagName, className) {
         var newElement = document.createElement(tagName);
@@ -21,51 +23,51 @@ var memory = {
         var row, rowElement, cell, i, j;
         var table = document.getElementById("grid");
         this.assignNumGuesses();
-		for (i = 0; i < this.gridHeight; i++) {
+		for (i = 0; i < this.grid.height; i++) {
             rowElement = this.createNewElement("tr", "row");
             row = [];
-            for (j = 0; j < this.gridWidth; j++) {
+            for (j = 0; j < this.grid.width; j++) {
                 cell = this.createNewElement("td", "cell");
                 row.push(cell);
                 rowElement.appendChild(cell);
             }
-            this.grid.push(row);
+            this.grid.elements.push(row);
             table.appendChild(rowElement);
         }
     },
     populateRandomGrid: function() {
         var numAssigned = 0, r1, r2;
-        this.rCells = {};
+        this.grid.filled = {};
         while(numAssigned < this.numGuesses) {
-            r1 = Math.floor(Math.random() * this.gridHeight);
-            if (!(r1 in this.rCells)) {
-                this.rCells[r1] = {};
+            r1 = Math.floor(Math.random() * this.grid.height);
+            if (!(r1 in this.grid.filled)) {
+                this.grid.filled[r1] = {};
             }
-            if (Object.keys(this.rCells[r1]).length < this.gridWidth) {
-                r2 = Math.floor(Math.random() * this.gridWidth);
-                if (!(r2 in this.rCells[r1])) {
-                    this.rCells[r1][r2] = true;
-                    this.grid[r1][r2].style.backgroundColor = "black";
+            if (Object.keys(this.grid.filled[r1]).length < this.grid.width) {
+                r2 = Math.floor(Math.random() * this.grid.width);
+                if (!(r2 in this.grid.filled[r1])) {
+                    this.grid.filled[r1][r2] = true;
+                    this.grid.elements[r1][r2].style.backgroundColor = "#CEE7FF";
                     numAssigned++;
                 }
             }
         }
-        console.log(self.rCells);
+        console.log(self.grid.filled);
     },
     hideFilled: function() {
         self = this;
         setTimeout(function() {
-            self.grid.forEach(function(row, i1) {
+            self.grid.elements.forEach(function(row, i1) {
                 row.forEach(function(cell, i2) {
-                    var color = "red";
-                    if (i1 in self.rCells && i2 in self.rCells[i1]) {
-                        color = "green";
+                    var color = "#FF353F";
+                    if (i1 in self.grid.filled && i2 in self.grid.filled[i1]) {
+                        color = "#84FF77";
                     }
                     cell.addEventListener("click", function(event) {
                         self.numGuesses++;
                         self.changeBackgroundColor(event, color);
                     });
-                    cell.style.backgroundColor = "white";
+                    cell.style.backgroundColor = "#8B93C0";
                 });
             });
         }, self.hideAfterMs);
