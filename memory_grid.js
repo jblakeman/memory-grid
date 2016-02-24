@@ -4,6 +4,10 @@ var memory = {
         width: 5,
         filled: {},
         elements: [],
+        colors: {
+            miss: "#FF353F",
+            hit: "#84FF77",
+        }
     },
     numGuesses: 0,
     hideAfterMs: 3350,
@@ -52,16 +56,15 @@ var memory = {
                 }
             }
         }
-        console.log(self.grid.filled);
     },
     hideFilled: function() {
         self = this;
         setTimeout(function() {
             self.grid.elements.forEach(function(row, i1) {
                 row.forEach(function(cell, i2) {
-                    var color = "#FF353F";
+                    var color = self.grid.colors.miss;
                     if (i1 in self.grid.filled && i2 in self.grid.filled[i1]) {
-                        color = "#84FF77";
+                        color = self.grid.colors.hit;
                     }
                     cell.addEventListener("click", function(event) {
                         self.numGuesses++;
