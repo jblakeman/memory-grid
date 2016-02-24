@@ -98,7 +98,8 @@ var memory = {
         }, self.hideAfterMs);
     },
     endGame: function() {
-        // Cloning and replacing removes all cell event listeners
+        // Cloning and replacing removes all grid event listeners
+        // User can no longer interact with board after game is finished
         var oldGrid = document.getElementById("grid");
         var newGrid = oldGrid.cloneNode(true);
         oldGrid.parentNode.replaceChild(newGrid, oldGrid);
