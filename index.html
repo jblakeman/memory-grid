@@ -7,9 +7,19 @@
     <link href="style.css" rel="stylesheet" type="text/css">
   </head>
   <body>
+    <header>
       <h1>Memory Grid</h1>
-      <table id="grid">
-      </table>
-      <script src="memory_grid.js"></script>
+    </header>
+    <div id="game">
+      <div id="status">
+          <button id="start-new">Start</button>
+      </div>
+      <div id="grid-box">
+        <div id="remaining">0 Guesses Remaining</div>
+        <table id="grid">
+        </table>
+      </div>
+    </div>
+    <script src="memory_grid.js"></script>
   </body>
 </html>
