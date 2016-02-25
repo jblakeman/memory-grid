@@ -23,9 +23,10 @@ var memory = {
     setNumFilled: function() {
         this.grid.fillNum = Math.floor((this.grid.height*this.grid.width)/3)+1;
     },
-    createNewElement: function(tagName, className) {
+    createNewElement: function(tagName, className, idName) {
         var newElement = document.createElement(tagName);
         if (className) newElement.className = className;
+        if (idName) newElement.id = idName;
         return newElement;
     },
     createGrid: function() {
@@ -51,9 +52,7 @@ var memory = {
         this.grid.filled = {};
         while(numAssigned < this.grid.fillNum) {
             r1 = Math.floor(Math.random() * this.grid.height);
-            if (!(r1 in this.grid.filled)) {
-                this.grid.filled[r1] = {};
-            }
+            if (!(r1 in this.grid.filled)) this.grid.filled[r1] = {};
             if (Object.keys(this.grid.filled[r1]).length < this.grid.width) {
                 r2 = Math.floor(Math.random() * this.grid.width);
                 if (!(r2 in this.grid.filled[r1])) {
@@ -66,16 +65,19 @@ var memory = {
         }
     },
     checkForWinner: function(self) {
+        var doneMsg, rateCorrect;
         if (self.grid.fillNum === self.guesses.used) {
+            rateCorrect = self.guesses.correct + "/" + self.guesses.used;
+            self.statusBar.innerText = rateCorrect + " correct";
             if (self.guesses.correct === self.grid.fillNum) {
-                self.statusBar.innerText = "Perfect Game!  " +
-                                           self.guesses.correct + "/" +
-                                           self.guesses.used;
+                doneMsg = "Perfect Game!";
             } else {
-                self.statusBar.innerText = "Game Over.  " +
-                                           self.guesses.correct + "/" +
-                                           self.guesses.used + " correct";
+                doneMsg = "Game Over";
             }
+            finishBar = self.createNewElement("div", "status", "completion");
+            finishBar.innerText = doneMsg;
+            gridBox = document.getElementById("grid-box");
+            gridBox.insertBefore(finishBar, self.statusBar);
             self.endGame();
         }
     },

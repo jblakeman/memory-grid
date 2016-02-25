@@ -23,9 +23,6 @@ h1 {
     justify-content: center;
 }
 
-#grid-box {
-}
-
 table#grid {
     background-color: black;
     border-spacing: 3px;
@@ -44,7 +41,7 @@ td.cell {
     font-size: 15px;
 }
 
-#remaining, #start-new {
+#remaining, #start-new, #completion {
     width: 338px;
     height: 40px;
     text-align: center;
@@ -52,7 +49,7 @@ td.cell {
     line-height: 40px;
 }
 
-#remaining {
+#remaining, #completion {
     margin-top: 15px;
 }
 
