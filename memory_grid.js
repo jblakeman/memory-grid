@@ -6,7 +6,7 @@ var memory = {
         filled: {},
         elements: [],
         colors: {
-            miss: "#FF353F",
+            miss: "#FF4A48",
             hit: "#84FF77",
             filled: "#CEE7FF",
             hidden: "#8B93C0",
