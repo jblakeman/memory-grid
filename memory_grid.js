@@ -47,22 +47,23 @@ var memory = {
             table.appendChild(rowElement);
         }
     },
-    populateRandomGrid: function() {
+    populateRandomGrid: function(self) {
         var numAssigned = 0, r1, r2;
-        this.grid.filled = {};
-        while(numAssigned < this.grid.fillNum) {
-            r1 = Math.floor(Math.random() * this.grid.height);
-            if (!(r1 in this.grid.filled)) this.grid.filled[r1] = {};
-            if (Object.keys(this.grid.filled[r1]).length < this.grid.width) {
-                r2 = Math.floor(Math.random() * this.grid.width);
-                if (!(r2 in this.grid.filled[r1])) {
-                    this.grid.filled[r1][r2] = false;
-                    this.grid.elements[r1][r2].style.backgroundColor = 
-                        this.grid.colors.filled;
+        self.grid.filled = {};
+        while(numAssigned < self.grid.fillNum) {
+            r1 = Math.floor(Math.random() * self.grid.height);
+            if (!(r1 in self.grid.filled)) self.grid.filled[r1] = {};
+            if (Object.keys(self.grid.filled[r1]).length < self.grid.width) {
+                r2 = Math.floor(Math.random() * self.grid.width);
+                if (!(r2 in self.grid.filled[r1])) {
+                    self.grid.filled[r1][r2] = false;
+                    self.grid.elements[r1][r2].style.backgroundColor = 
+                        self.grid.colors.filled;
                     numAssigned++;
                 }
             }
         }
+        self.statusBar.innerText = "Memorize";
     },
     checkForWinner: function(self) {
         var doneMsg, rateCorrect;
@@ -74,11 +75,13 @@ var memory = {
             } else {
                 doneMsg = "Game Over";
             }
-            finishBar = self.createNewElement("div", "status", "completion");
+            var finishBar = self.createNewElement("div", "status", "completion");
             finishBar.innerText = doneMsg;
             gridBox = document.getElementById("grid-box");
             gridBox.insertBefore(finishBar, self.statusBar);
-            self.endGame();
+            self.finished = true;
+            var newStart = self.startButton.cloneNode(true);
+            self.startButton.parentNode.replaceChild(newStart, self.startButton);
         }
     },
     changeBackgroundColor: function(event, color) {
@@ -95,19 +98,21 @@ var memory = {
                                    (i2 in self.grid.filled[i1]));
                     if (correct) color = self.grid.colors.hit;
                     cell.addEventListener("click", function(event) {
-                        if (correct && !(self.grid.filled[i1][i2])) {
-                            self.guesses.correct++;
-                            self.grid.filled[i1][i2] = true;
+                        if (!self.finished) {
+                            if (correct && !(self.grid.filled[i1][i2])) {
+                                self.guesses.correct++;
+                                self.grid.filled[i1][i2] = true;
+                            }
+                            if (!self.grid.empty[i1][i2]) {
+                                self.guesses.used++;
+                                self.grid.empty[i1][i2] = true;
+                            }
+                            self.statusBar.innerText = (self.grid.fillNum -
+                                                        self.guesses.used) +
+                                                       " Guesses left";
+                            self.changeBackgroundColor(event, color);
+                            self.checkForWinner(self);
                         }
-                        if (!self.grid.empty[i1][i2]) {
-                            self.guesses.used++;
-                            self.grid.empty[i1][i2] = true;
-                        }
-                        self.statusBar.innerText = (self.grid.fillNum -
-                                                    self.guesses.used) +
-                                                   " Guesses left";
-                        self.changeBackgroundColor(event, color);
-                        self.checkForWinner(self);
                     });
                     cell.style.backgroundColor = self.grid.colors.hidden;
                 });
@@ -115,19 +120,14 @@ var memory = {
             self.statusBar.innerText = self.grid.fillNum + " Guesses left";
         }, self.hideAfterMs);
     },
-    newGame: function() {
-    },
-    endGame: function() {
-        // Cloning and replacing removes all grid event listeners
-        // User can no longer interact with board after game is finished
-        var oldGrid = document.getElementById("grid");
-        var newGrid = oldGrid.cloneNode(true);
-        oldGrid.parentNode.replaceChild(newGrid, oldGrid);
-    },
     playGame: function() {
         this.createGrid();
-        this.populateRandomGrid();
-        this.setHiddenBoard();
+        this.statusBar.innerText = "Press start to begin";
+        self = this;
+        self.startButton.addEventListener("click", function() {
+            self.populateRandomGrid(self);
+            self.setHiddenBoard(self);
+        });
     }
 };
 memory.playGame();
