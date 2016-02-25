@@ -16,3 +16,15 @@ Correct and incorrect clicks are tallied, and the game ends when the user has cl
 ###Objective###
 
 Complete a perfect game by clicking all the originally filled cells with zero misses.
+
+###Notes/Todo###
+
+The game currently does not allow for a new game without refreshing the page.
+
+* Some things to add
+    1.  "New Game" button to start new game after completion
+    2.  Keep running statistics
+        * Total correct/incorrect ratio
+        * Number of perfect games / total
+    3.  Varying difficulties that adjust the size of the grid and/or the number of filled cells.
+    4.  After fininishing without a perfect game, reveal the remaining originally filled cells that the user failed to click.
