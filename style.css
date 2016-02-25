@@ -1,0 +1,59 @@
+body * {
+    font-family: "Russo One", "sans-serif";
+}
+
+h1 {
+    text-align: center;
+    font-size: 3em;
+    margin-top: 40px;
+    margin-bottom: 50px;
+}
+
+#game, #grid-box {
+    display: flex;
+}
+
+#grid-box, #status {
+    flex-direction: column;
+    align-items: center;
+}
+
+#game {
+    flex-direction: row;
+    justify-content: center;
+}
+
+table#grid {
+    background-color: black;
+    border-spacing: 3px;
+}
+
+td.cell {
+    height: 62px;
+    width: 62px;
+    background-color: #8B93C0;
+}
+
+.status {
+    background-color: black;
+    color: #CEE7FF;
+    letter-spacing: 2px;
+    font-size: 15px;
+}
+
+#remaining, #start-new, #completion {
+    width: 338px;
+    height: 40px;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 40px;
+}
+
+#remaining, #completion {
+    margin-top: 15px;
+}
+
+#start-new {
+    margin-bottom: 15px;
+}
+
