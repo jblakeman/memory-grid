@@ -4,6 +4,7 @@ var memory = {
         width: 5,
         fillNum: 0,
         filled: {},
+        empty: {},
         elements: [],
         colors: {
             miss: "#FF4A48",
@@ -34,10 +35,12 @@ var memory = {
 		for (i = 0; i < this.grid.height; i++) {
             rowElement = this.createNewElement("tr", "row");
             row = [];
+            this.grid.empty[i] = {};
             for (j = 0; j < this.grid.width; j++) {
                 cell = this.createNewElement("td", "cell");
                 row.push(cell);
                 rowElement.appendChild(cell);
+                this.grid.empty[i][j] = false;
             }
             this.grid.elements.push(row);
             table.appendChild(rowElement);
@@ -54,8 +57,9 @@ var memory = {
             if (Object.keys(this.grid.filled[r1]).length < this.grid.width) {
                 r2 = Math.floor(Math.random() * this.grid.width);
                 if (!(r2 in this.grid.filled[r1])) {
-                    this.grid.filled[r1][r2] = true;
-                    this.grid.elements[r1][r2].style.backgroundColor = this.grid.colors.filled;
+                    this.grid.filled[r1][r2] = false;
+                    this.grid.elements[r1][r2].style.backgroundColor = 
+                        this.grid.colors.filled;
                     numAssigned++;
                 }
             }
@@ -66,7 +70,7 @@ var memory = {
             if (self.guesses.correct === self.grid.fillNum) {
                 self.statusBar.innerText = "Perfect Game!  " +
                                            self.guesses.correct + "/" +
-                                           self.guesses.max;
+                                           self.guesses.used;
             } else {
                 self.statusBar.innerText = "Game Over.  " +
                                            self.guesses.correct + "/" +
@@ -84,16 +88,19 @@ var memory = {
         setTimeout(function() {
             self.grid.elements.forEach(function(row, i1) {
                 row.forEach(function(cell, i2) {
-                    var correct = false, color = self.grid.colors.miss;
-                    if (i1 in self.grid.filled && i2 in self.grid.filled[i1]) {
-                        color = self.grid.colors.hit;
-                        correct = true;
-                    }
+                    var color = self.grid.colors.miss;
+                    var correct = ((i1 in self.grid.filled) && 
+                                   (i2 in self.grid.filled[i1]));
+                    if (correct) color = self.grid.colors.hit;
                     cell.addEventListener("click", function(event) {
-                        if (correct) {
+                        if (correct && !(self.grid.filled[i1][i2])) {
                             self.guesses.correct++;
+                            self.grid.filled[i1][i2] = true;
                         }
-                        self.guesses.used++;
+                        if (!self.grid.empty[i1][i2]) {
+                            self.guesses.used++;
+                            self.grid.empty[i1][i2] = true;
+                        }
                         self.statusBar.innerText = (self.grid.fillNum -
                                                     self.guesses.used) +
                                                    " Guesses left";
