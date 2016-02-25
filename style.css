@@ -32,8 +32,8 @@ table#grid {
 }
 
 td.cell {
-    height: 60px;
-    width: 60px;
+    height: 62px;
+    width: 62px;
     background-color: #8B93C0;
 }
 
@@ -45,7 +45,7 @@ td.cell {
 }
 
 #remaining, #start-new {
-    width: 318px;
+    width: 338px;
     height: 40px;
     text-align: center;
     vertical-align: middle;
