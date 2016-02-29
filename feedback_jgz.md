@@ -4,7 +4,7 @@
 
 >Did you complete the user stories, wireframes, task tracking, and/or ERDs, as specified above? Did you use source control as expected for the phase of the program you’re in (detailed above)?
 
-**Meets Expectations**. I love to see such an extensive commit history! That's super important, and will really be handy when you get into group work too. I would've liked to have seen more on the planning side.  So, an wireframe, user stories, etc. The readme should also include installation instructions.  It does not seem too important with this project, given that you only need to open the index.html file.  But, moving forward it's super important, as we start getting into package managers and things like that!
+**Meets Expectations**. I love to see such an extensive commit history! That's super important, and will really be handy when you get into group work too. Would love to see user stories added in next time too!
 
 ## Technical Requirements
 
