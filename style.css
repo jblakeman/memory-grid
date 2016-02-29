@@ -1,3 +1,8 @@
+ /*JGZ - No validator errors, nice!!*/
+ /*JGZ - This is super clean, well done! I really like that you've combined selctors with the same styling into on selection*/
+ /*JGZ - My next challenge would be to srart playing arounf with "em" and "%" for things like width, height, and font size.
+ This will help you add in some responsiveness to you app on window size changes!*/
+
 body * {
     font-family: "Russo One", "sans-serif";
 }
@@ -56,4 +61,3 @@ td.cell {
 #start-new {
     margin-bottom: 15px;
 }
-
