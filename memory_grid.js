@@ -48,17 +48,18 @@ var memory = {
         }
     },
     populateRandomGrid: function(self) {
-        var numAssigned = 0, r1, r2;
+        var numAssigned = 0, random1, random2;
         self.grid.filled = {};
         while(numAssigned < self.grid.fillNum) {
-            r1 = Math.floor(Math.random() * self.grid.height);
-            if (!(r1 in self.grid.filled)) { self.grid.filled[r1] = {}; }
-            // 
-            if (Object.keys(self.grid.filled[r1]).length < self.grid.width) {
-                r2 = Math.floor(Math.random() * self.grid.width);
-                if (!(r2 in self.grid.filled[r1])) {
-                    self.grid.filled[r1][r2] = false;
-                    self.grid.elements[r1][r2].style.backgroundColor = 
+            random1 = Math.floor(Math.random() * self.grid.height);
+            if (!(random1 in self.grid.filled)) {
+                self.grid.filled[random1] = {};
+            }
+            if (Object.keys(self.grid.filled[random1]).length < self.grid.width) {
+                random2 = Math.floor(Math.random() * self.grid.width);
+                if (!(random2 in self.grid.filled[random1])) {
+                    self.grid.filled[random1][random2] = false;
+                    self.grid.elements[random1][random2].style.backgroundColor =
                         self.grid.colors.filled;
                     numAssigned++;
                 }
