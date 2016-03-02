@@ -33,7 +33,7 @@ var memory = {
         var row, rowElement, cell, i, j;
         var table = document.getElementById("grid");
         this.setNumFilled();
-		for (i = 0; i < this.grid.height; i++) {
+        for (i = 0; i < this.grid.height; i++) {
             rowElement = this.createNewElement("tr", "row");
             row = [];
             this.grid.empty[i] = {};
