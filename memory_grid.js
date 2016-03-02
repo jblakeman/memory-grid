@@ -25,8 +25,8 @@ var memory = {
     },
     createNewElement: function(tagName, className, idName) {
         var newElement = document.createElement(tagName);
-        if (className) newElement.className = className;
-        if (idName) newElement.id = idName;
+        if (className) { newElement.className = className; }
+        if (idName) { newElement.id = idName; }
         return newElement;
     },
     createGrid: function() {
@@ -52,7 +52,8 @@ var memory = {
         self.grid.filled = {};
         while(numAssigned < self.grid.fillNum) {
             r1 = Math.floor(Math.random() * self.grid.height);
-            if (!(r1 in self.grid.filled)) self.grid.filled[r1] = {};
+            if (!(r1 in self.grid.filled)) { self.grid.filled[r1] = {}; }
+            // 
             if (Object.keys(self.grid.filled[r1]).length < self.grid.width) {
                 r2 = Math.floor(Math.random() * self.grid.width);
                 if (!(r2 in self.grid.filled[r1])) {
@@ -96,7 +97,7 @@ var memory = {
                     var color = self.grid.colors.miss;
                     var correct = ((i1 in self.grid.filled) && 
                                    (i2 in self.grid.filled[i1]));
-                    if (correct) color = self.grid.colors.hit;
+                    if (correct) { color = self.grid.colors.hit; }
                     cell.addEventListener("click", function(event) {
                         if (!self.finished) {
                             if (correct && !(self.grid.filled[i1][i2])) {
