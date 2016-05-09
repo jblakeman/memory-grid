@@ -5,6 +5,10 @@
         if (idName) { newElement.id = idName; }
         return newElement;
     }
+    function changeBackgroundColor(event, color) {
+        event.preventDefault();
+        event.target.style.backgroundColor = color;
+    }
     function Grid() {
         this.height = 6;
         this.width = 5;
@@ -28,6 +32,7 @@
         this.startButton = null;
         this.statusBar = null;
         this.finishBar = null;
+        this.started = false;
     }
     Grid.prototype.setFillNum = function() {
         this.fillNum = Math.floor((this.height*this.width)/3)+1;
@@ -93,79 +98,80 @@
         }
     };
 
-    function checkForWinner(grid) {
+    Grid.prototype.checkForWinner = function() {
         var doneMsg, rateCorrect;
-        if (grid.fillNum === grid.guesses.used) {
-            rateCorrect = grid.guesses.correct + "/" + grid.guesses.used;
-            grid.statusBar.innerText = rateCorrect + " correct";
-            if (grid.guesses.correct === grid.fillNum) {
+        if (this.fillNum === this.guesses.used) {
+            rateCorrect = this.guesses.correct + "/" + this.guesses.used;
+            this.statusBar.innerText = rateCorrect + " correct";
+            if (this.guesses.correct === this.fillNum) {
                 doneMsg = "Perfect Game!";
             } else {
                 doneMsg = "Game Over";
             }
             // Add game completion status element when finished
-            grid.finishBar = createNewElement("div", "status", "completion");
-            grid.finishBar.innerText = doneMsg;
-            grid.gridBox.insertBefore(grid.finishBar, grid.statusBar);
-            grid.finished = true;
-            grid.startButton.innerText = "New Game";
-            grid.startButton.addEventListener("click", function() {
-                grid.clearBoard();
+            this.finishBar = createNewElement("div", "status", "completion");
+            this.finishBar.innerText = doneMsg;
+            this.gridBox.insertBefore(this.finishBar, this.statusBar);
+            this.finished = true;
+            this.startButton.innerText = "New Game";
+            this.startButton.addEventListener("click", function() {
+                this.clearBoard();
                 var newGrid = new Grid();
                 playGame(newGrid);
-            });
+            }.bind(this));
             // Cloning the node removes the event listener - this is a hack that
             // needs to be replaced with a cleaner solution when the reset game
             // button functionality is added
             //var newStart = self.startButton.cloneNode(true);
             //self.startButton.parentNode.replaceChild(newStart, self.startButton);
         }
-    }
-    function changeBackgroundColor(event, color) {
-        event.preventDefault();
-        event.target.style.backgroundColor = color;
-    }
-    function setHiddenBoard(grid) {
+    };
+    Grid.prototype.cellClickHandler = function(event, correct, color, i1, i2) {
+        if (!this.finished) {
+            if (correct && !(this.filled[i1][i2])) {
+                this.guesses.correct++;
+                this.filled[i1][i2] = true;
+            }
+            if (!this.empty[i1][i2]) {
+                this.guesses.used++;
+                this.empty[i1][i2] = true;
+            }
+            this.statusBar.innerText = (this.fillNum -
+                                        this.guesses.used) +
+                                        " Guesses left";
+            changeBackgroundColor(event, color);
+            this.checkForWinner();
+        }
+    };
+    Grid.prototype.setHiddenBoard = function() {
         var hideAfterMs = 3350;
         setTimeout(function() {
-            grid.elements.forEach(function(row, i1) {
+            this.elements.forEach(function(row, i1) {
                 row.forEach(function(cell, i2) {
                     // Check correctness of each cell to tally accordingly
                     // to determine when game ends and prevent duplicate
                     // click tallies
-                    var color = grid.colors.miss;
-                    var correct = ((i1 in grid.filled) && 
-                                   (i2 in grid.filled[i1]));
-                    if (correct) { color = grid.colors.hit; }
-                    var cellClickListener = function(event) {
-                        if (!grid.finished) {
-                            if (correct && !(grid.filled[i1][i2])) {
-                                grid.guesses.correct++;
-                                grid.filled[i1][i2] = true;
-                            }
-                            if (!grid.empty[i1][i2]) {
-                                grid.guesses.used++;
-                                grid.empty[i1][i2] = true;
-                            }
-                            grid.statusBar.innerText = (grid.fillNum -
-                                                        grid.guesses.used) +
-                                                        " Guesses left";
-                            changeBackgroundColor(event, color);
-                            checkForWinner(grid);
-                        }
-                    };
-                    cell.addEventListener("click", cellClickListener);
-                    cell.style.backgroundColor = grid.colors.hidden;
-                });
-            });
-            grid.statusBar.innerText = grid.fillNum + " Guesses left";
-        }, hideAfterMs);
-    }
+                    var color = this.colors.miss;
+                    var correct = ((i1 in this.filled) && 
+                                   (i2 in this.filled[i1]));
+                    if (correct) { color = this.colors.hit; }
+                    cell.addEventListener("click", function(event) {
+                        this.cellClickHandler(event, correct, color, i1, i2);
+                    }.bind(this));
+                    cell.style.backgroundColor = this.colors.hidden;
+                }.bind(this));
+            }.bind(this));
+            this.statusBar.innerText = this.fillNum + " Guesses left";
+        }.bind(this), hideAfterMs);
+    };
     function playGame(grid) {
         grid.createGrid();
         grid.startButton.addEventListener("click", function() {
-            grid.populateRandom();
-            setHiddenBoard(grid);
+            if (!grid.started) {
+                grid.started = true;
+                grid.populateRandom();
+                grid.setHiddenBoard();
+            }
         });
     }
     var g = new Grid();
