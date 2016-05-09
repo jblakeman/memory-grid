@@ -29,6 +29,8 @@ var memory = {
         if (idName) { newElement.id = idName; }
         return newElement;
     },
+    // Separate creation of rows and cells into different methods
+    // called by createGrid
     createGrid: function() {
         var row, rowElement, cell, i, j;
         var table = document.getElementById("grid");
@@ -51,14 +53,19 @@ var memory = {
         var numAssigned = 0, random1, random2;
         self.grid.filled = {};
         while(numAssigned < self.grid.fillNum) {
+            // Add random row number as key with its own object of random cell keys
             random1 = Math.floor(Math.random() * self.grid.height);
             if (!(random1 in self.grid.filled)) {
                 self.grid.filled[random1] = {};
             }
+            // Populate random cell keys for each random row
             if (Object.keys(self.grid.filled[random1]).length < self.grid.width) {
                 random2 = Math.floor(Math.random() * self.grid.width);
                 if (!(random2 in self.grid.filled[random1])) {
+                    // Initialize filled cell to false so later in listener
+                    // we can ignore cells that have already been clicked
                     self.grid.filled[random1][random2] = false;
+                    // Change background color as we populate
                     self.grid.elements[random1][random2].style.backgroundColor =
                         self.grid.colors.filled;
                     numAssigned++;
@@ -77,11 +84,15 @@ var memory = {
             } else {
                 doneMsg = "Game Over";
             }
+            // Add game completion status element when finished
             var finishBar = self.createNewElement("div", "status", "completion");
             finishBar.innerText = doneMsg;
             gridBox = document.getElementById("grid-box");
             gridBox.insertBefore(finishBar, self.statusBar);
             self.finished = true;
+            // Cloning the node removes the event listener - this is a hack that
+            // needs to be replaced with a cleaner solution when the reset game
+            // button functionality is added
             var newStart = self.startButton.cloneNode(true);
             self.startButton.parentNode.replaceChild(newStart, self.startButton);
         }
@@ -95,6 +106,9 @@ var memory = {
         setTimeout(function() {
             self.grid.elements.forEach(function(row, i1) {
                 row.forEach(function(cell, i2) {
+                    // Check correctness of each cell to tally accordingly
+                    // to determine when game ends and prevent duplicate
+                    // click tallies
                     var color = self.grid.colors.miss;
                     var correct = ((i1 in self.grid.filled) && 
                                    (i2 in self.grid.filled[i1]));
