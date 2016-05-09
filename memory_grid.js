@@ -1,149 +1,173 @@
-var memory = {
-    grid: {
-        height: 6,
-        width: 5,
-        fillNum: 0,
-        filled: {},
-        empty: {},
-        elements: [],
-        colors: {
-            miss: "#FF4A48",
-            hit: "#84FF77",
-            filled: "#CEE7FF",
-            hidden: "#8B93C0",
-        }
-    },
-    startButton: document.getElementById("start-new"),
-    statusBar: document.getElementById("remaining"),
-    guesses: {
-        used: 0,
-        correct: 0
-    },
-    hideAfterMs: 3350,
-    setNumFilled: function() {
-        this.grid.fillNum = Math.floor((this.grid.height*this.grid.width)/3)+1;
-    },
-    createNewElement: function(tagName, className, idName) {
+(function() {
+    function createNewElement(tagName, className, idName) {
         var newElement = document.createElement(tagName);
         if (className) { newElement.className = className; }
         if (idName) { newElement.id = idName; }
         return newElement;
-    },
-    // Separate creation of rows and cells into different methods
-    // called by createGrid
-    createGrid: function() {
+    }
+    function Grid() {
+        this.height = 6;
+        this.width = 5;
+        this.fillNum = 0;
+        this.filled = {};
+        this.empty = {};
+        this.elements = [];
+        this.colors = {
+            miss: "#FF4A48",
+            hit: "#84FF77",
+            filled: "#CEE7FF",
+            hidden: "#8B93C0"
+        };
+        this.guesses = {
+            used: 0,
+            correct: 0
+        };
+        this.finished = false;
+        this.gridBox = document.getElementById("grid-box");
+        this.table = null;
+        this.startButton = null;
+        this.statusBar = null;
+        this.finishBar = null;
+    }
+    Grid.prototype.setFillNum = function() {
+        this.fillNum = Math.floor((this.height*this.width)/3)+1;
+    };
+    Grid.prototype.createElements = function() {
+        this.startButton = this.gridBox.appendChild(
+            createNewElement("button", "status", "start-new")
+        );
+        this.startButton.innerText = "Start";
+        this.table = this.gridBox.appendChild(
+            createNewElement("table", false, "grid")
+        );
+    };
+    Grid.prototype.createGrid = function() {
+        this.createElements();
+        this.setFillNum();
         var row, rowElement, cell, i, j;
-        var table = document.getElementById("grid");
-        this.setNumFilled();
-        for (i = 0; i < this.grid.height; i++) {
-            rowElement = this.createNewElement("tr", "row");
+        for (i = 0; i < this.height; i++) {
+            rowElement = createNewElement("tr", "row");
             row = [];
-            this.grid.empty[i] = {};
-            for (j = 0; j < this.grid.width; j++) {
-                cell = this.createNewElement("td", "cell");
+            this.empty[i] = {};
+            for (j = 0; j < this.width; j++) {
+                cell = createNewElement("td", "cell");
                 row.push(cell);
                 rowElement.appendChild(cell);
-                this.grid.empty[i][j] = false;
+                this.empty[i][j] = false;
             }
-            this.grid.elements.push(row);
-            table.appendChild(rowElement);
+            this.elements.push(row);
+            this.table.appendChild(rowElement);
         }
-    },
-    populateRandomGrid: function(self) {
+    };
+    Grid.prototype.populateRandom = function() {
         var numAssigned = 0, random1, random2;
-        self.grid.filled = {};
-        while(numAssigned < self.grid.fillNum) {
+        this.filled = {};
+        while(numAssigned < this.fillNum) {
             // Add random row number as key with its own object of random cell keys
-            random1 = Math.floor(Math.random() * self.grid.height);
-            if (!(random1 in self.grid.filled)) {
-                self.grid.filled[random1] = {};
+            random1 = Math.floor(Math.random() * this.height);
+            if (!(random1 in this.filled)) {
+                this.filled[random1] = {};
             }
             // Populate random cell keys for each random row
-            if (Object.keys(self.grid.filled[random1]).length < self.grid.width) {
-                random2 = Math.floor(Math.random() * self.grid.width);
-                if (!(random2 in self.grid.filled[random1])) {
+            if (Object.keys(this.filled[random1]).length < this.width) {
+                random2 = Math.floor(Math.random() * this.width);
+                if (!(random2 in this.filled[random1])) {
                     // Initialize filled cell to false so later in listener
                     // we can ignore cells that have already been clicked
-                    self.grid.filled[random1][random2] = false;
+                    this.filled[random1][random2] = false;
                     // Change background color as we populate
-                    self.grid.elements[random1][random2].style.backgroundColor =
-                        self.grid.colors.filled;
+                    this.elements[random1][random2].style.backgroundColor =
+                        this.colors.filled;
                     numAssigned++;
                 }
             }
         }
-        self.statusBar.innerText = "Memorize";
-    },
-    checkForWinner: function(self) {
+        this.statusBar = this.gridBox.appendChild(
+            createNewElement("div", "status", "remaining")
+        );
+        this.statusBar.innerText = "Memorize";
+    };
+    Grid.prototype.clearBoard = function() {
+        while (this.gridBox.firstChild) {
+            this.gridBox.removeChild(this.gridBox.firstChild);
+        }
+    };
+
+    function checkForWinner(grid) {
         var doneMsg, rateCorrect;
-        if (self.grid.fillNum === self.guesses.used) {
-            rateCorrect = self.guesses.correct + "/" + self.guesses.used;
-            self.statusBar.innerText = rateCorrect + " correct";
-            if (self.guesses.correct === self.grid.fillNum) {
+        if (grid.fillNum === grid.guesses.used) {
+            rateCorrect = grid.guesses.correct + "/" + grid.guesses.used;
+            grid.statusBar.innerText = rateCorrect + " correct";
+            if (grid.guesses.correct === grid.fillNum) {
                 doneMsg = "Perfect Game!";
             } else {
                 doneMsg = "Game Over";
             }
             // Add game completion status element when finished
-            var finishBar = self.createNewElement("div", "status", "completion");
-            finishBar.innerText = doneMsg;
-            gridBox = document.getElementById("grid-box");
-            gridBox.insertBefore(finishBar, self.statusBar);
-            self.finished = true;
+            grid.finishBar = createNewElement("div", "status", "completion");
+            grid.finishBar.innerText = doneMsg;
+            grid.gridBox.insertBefore(grid.finishBar, grid.statusBar);
+            grid.finished = true;
+            grid.startButton.innerText = "New Game";
+            grid.startButton.addEventListener("click", function() {
+                grid.clearBoard();
+                var newGrid = new Grid();
+                playGame(newGrid);
+            });
             // Cloning the node removes the event listener - this is a hack that
             // needs to be replaced with a cleaner solution when the reset game
             // button functionality is added
-            var newStart = self.startButton.cloneNode(true);
-            self.startButton.parentNode.replaceChild(newStart, self.startButton);
+            //var newStart = self.startButton.cloneNode(true);
+            //self.startButton.parentNode.replaceChild(newStart, self.startButton);
         }
-    },
-    changeBackgroundColor: function(event, color) {
-        event.target.style.backgroundColor = color;
+    }
+    function changeBackgroundColor(event, color) {
         event.preventDefault();
-    },
-    setHiddenBoard: function() {
-        self = this;
+        event.target.style.backgroundColor = color;
+    }
+    function setHiddenBoard(grid) {
+        var hideAfterMs = 3350;
         setTimeout(function() {
-            self.grid.elements.forEach(function(row, i1) {
+            grid.elements.forEach(function(row, i1) {
                 row.forEach(function(cell, i2) {
                     // Check correctness of each cell to tally accordingly
                     // to determine when game ends and prevent duplicate
                     // click tallies
-                    var color = self.grid.colors.miss;
-                    var correct = ((i1 in self.grid.filled) && 
-                                   (i2 in self.grid.filled[i1]));
-                    if (correct) { color = self.grid.colors.hit; }
-                    cell.addEventListener("click", function(event) {
-                        if (!self.finished) {
-                            if (correct && !(self.grid.filled[i1][i2])) {
-                                self.guesses.correct++;
-                                self.grid.filled[i1][i2] = true;
+                    var color = grid.colors.miss;
+                    var correct = ((i1 in grid.filled) && 
+                                   (i2 in grid.filled[i1]));
+                    if (correct) { color = grid.colors.hit; }
+                    var cellClickListener = function(event) {
+                        if (!grid.finished) {
+                            if (correct && !(grid.filled[i1][i2])) {
+                                grid.guesses.correct++;
+                                grid.filled[i1][i2] = true;
                             }
-                            if (!self.grid.empty[i1][i2]) {
-                                self.guesses.used++;
-                                self.grid.empty[i1][i2] = true;
+                            if (!grid.empty[i1][i2]) {
+                                grid.guesses.used++;
+                                grid.empty[i1][i2] = true;
                             }
-                            self.statusBar.innerText = (self.grid.fillNum -
-                                                        self.guesses.used) +
-                                                       " Guesses left";
-                            self.changeBackgroundColor(event, color);
-                            self.checkForWinner(self);
+                            grid.statusBar.innerText = (grid.fillNum -
+                                                        grid.guesses.used) +
+                                                        " Guesses left";
+                            changeBackgroundColor(event, color);
+                            checkForWinner(grid);
                         }
-                    });
-                    cell.style.backgroundColor = self.grid.colors.hidden;
+                    };
+                    cell.addEventListener("click", cellClickListener);
+                    cell.style.backgroundColor = grid.colors.hidden;
                 });
             });
-            self.statusBar.innerText = self.grid.fillNum + " Guesses left";
-        }, self.hideAfterMs);
-    },
-    playGame: function() {
-        this.createGrid();
-        this.statusBar.innerText = "Press start to begin";
-        self = this;
-        self.startButton.addEventListener("click", function() {
-            self.populateRandomGrid(self);
-            self.setHiddenBoard(self);
+            grid.statusBar.innerText = grid.fillNum + " Guesses left";
+        }, hideAfterMs);
+    }
+    function playGame(grid) {
+        grid.createGrid();
+        grid.startButton.addEventListener("click", function() {
+            grid.populateRandom();
+            setHiddenBoard(grid);
         });
     }
-};
-memory.playGame();
+    var g = new Grid();
+    playGame(g);
+})();
