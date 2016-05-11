@@ -117,7 +117,7 @@
             this.startButton.addEventListener("click", function() {
                 this.clearBoard();
                 var newGrid = new Grid();
-                playGame(newGrid);
+                newGrid.playGame();
             }.bind(this));
             // Cloning the node removes the event listener - this is a hack that
             // needs to be replaced with a cleaner solution when the reset game
@@ -146,34 +146,34 @@
     Grid.prototype.setHiddenBoard = function() {
         var hideAfterMs = 3350;
         setTimeout(function() {
+            this.statusBar.innerText = this.fillNum + " Guesses left";
+            // Configure all cells on the grid, hiding those populated
             this.elements.forEach(function(row, i1) {
                 row.forEach(function(cell, i2) {
-                    // Check correctness of each cell to tally accordingly
-                    // to determine when game ends and prevent duplicate
-                    // click tallies
+                    // Check correctness of each cell and tally accordingly
+                    // to determine when game ends / prevent duplicate tallies
                     var color = this.colors.miss;
                     var correct = ((i1 in this.filled) && 
                                    (i2 in this.filled[i1]));
                     if (correct) { color = this.colors.hit; }
+                    cell.style.backgroundColor = this.colors.hidden;
                     cell.addEventListener("click", function(event) {
                         this.cellClickHandler(event, correct, color, i1, i2);
                     }.bind(this));
-                    cell.style.backgroundColor = this.colors.hidden;
                 }.bind(this));
             }.bind(this));
-            this.statusBar.innerText = this.fillNum + " Guesses left";
         }.bind(this), hideAfterMs);
     };
-    function playGame(grid) {
-        grid.createGrid();
-        grid.startButton.addEventListener("click", function() {
-            if (!grid.started) {
-                grid.started = true;
-                grid.populateRandom();
-                grid.setHiddenBoard();
+    Grid.prototype.playGame = function() {
+        this.createGrid();
+        this.startButton.addEventListener("click", function() {
+            if (!this.started) {
+                this.started = true;
+                this.populateRandom();
+                this.setHiddenBoard();
             }
-        });
-    }
-    var g = new Grid();
-    playGame(g);
+        }.bind(this));
+    };
+    var grid = new Grid();
+    grid.playGame();
 })();
