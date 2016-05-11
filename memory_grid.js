@@ -58,6 +58,8 @@
                 cell = createNewElement("td", "cell");
                 row.push(cell);
                 rowElement.appendChild(cell);
+                // Initialize as a boolean (clicked/not clicked) to be
+                // handled for tallying in listener
                 this.empty[i][j] = false;
             }
             this.elements.push(row);
@@ -68,7 +70,8 @@
         var numAssigned = 0, random1, random2;
         this.filled = {};
         while(numAssigned < this.fillNum) {
-            // Add random row number as key with its own object of random cell keys
+            // Add random row number as key with its own object of random
+            // cell keys
             random1 = Math.floor(Math.random() * this.height);
             if (!(random1 in this.filled)) {
                 this.filled[random1] = {};
@@ -77,9 +80,9 @@
             if (Object.keys(this.filled[random1]).length < this.width) {
                 random2 = Math.floor(Math.random() * this.width);
                 if (!(random2 in this.filled[random1])) {
-                    // Initialize filled cell to false so later in listener
-                    // we can ignore cells that have already been clicked
-                    this.filled[random1][random2] = false;
+                    // Don't need to store a value here, the purpose of
+                    // this object is to do key lookups for cell validation
+                    this.filled[random1][random2] = null;
                     // Change background color as we populate
                     this.elements[random1][random2].style.backgroundColor =
                         this.colors.filled;
@@ -119,23 +122,15 @@
                 var newGrid = new Grid();
                 newGrid.playGame();
             }.bind(this));
-            // Cloning the node removes the event listener - this is a hack that
-            // needs to be replaced with a cleaner solution when the reset game
-            // button functionality is added
-            //var newStart = self.startButton.cloneNode(true);
-            //self.startButton.parentNode.replaceChild(newStart, self.startButton);
         }
     };
     Grid.prototype.cellClickHandler = function(event, correct, color, i1, i2) {
-        if (!this.finished) {
-            if (correct && !(this.filled[i1][i2])) {
+        if (!this.finished && !this.empty[i1][i2]) {
+            if (correct) {
                 this.guesses.correct++;
-                this.filled[i1][i2] = true;
             }
-            if (!this.empty[i1][i2]) {
-                this.guesses.used++;
-                this.empty[i1][i2] = true;
-            }
+            this.guesses.used++;
+            this.empty[i1][i2] = true;
             this.statusBar.innerText = (this.fillNum -
                                         this.guesses.used) +
                                         " Guesses left";
