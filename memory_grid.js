@@ -1,4 +1,6 @@
 (function() {
+    "use strict";
+
     function createNewElement(tagName, className, idName) {
         var newElement = document.createElement(tagName);
         if (className) { newElement.className = className; }
