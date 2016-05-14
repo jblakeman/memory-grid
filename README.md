@@ -19,10 +19,7 @@ Complete a perfect game by clicking all the originally filled cells with zero mi
 
 ###Notes/Todo###
 
-The game currently does not allow for a new game without refreshing the page.
-
 * Some things to add
-    1.  "New Game" button to start new game after completion
     2.  Keep running statistics
         * Total correct/incorrect ratio
         * Number of perfect games / total
